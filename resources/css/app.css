@@ -1,0 +1,15 @@
+
+@import "tailwindcss";
+
+@source "../../resources/**/*.blade.php";
+@source "../../resources/**/*.js";
+
+:root {
+    font-family: Inter, sans-serif;
+}
+
+body {
+    margin: 0;
+    background: #F4F7F5;
+    color: #1F2937;
+}
