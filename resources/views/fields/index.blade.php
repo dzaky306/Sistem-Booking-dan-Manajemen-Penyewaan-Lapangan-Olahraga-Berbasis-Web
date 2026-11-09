@@ -46,7 +46,7 @@
 
     <div class="mt-8 flex items-center justify-between">
         <h2 class="text-xl font-bold">Lapangan pilihan</h2>
-        <span class="text-sm text-gray-500">Contoh tampilan</span>
+        
     </div>
 
 
