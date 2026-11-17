@@ -28,6 +28,18 @@
                 Jelajahi Lapangan
             </a>
 
+            
+    <a href="{{ route('bookings.index') }}"
+       class="text-gray-600 hover:text-[#176B4D]">
+        Riwayat Booking
+    </a>
+
+    <a href="{{ route('profile.edit') }}"
+       class="text-gray-600 hover:text-[#176B4D]">
+        Profil Saya
+    </a>
+
+
             <a href="{{ route('home') }}#cara-kerja"
                class="text-gray-600 hover:text-[#176B4D]">
                 Cara Booking

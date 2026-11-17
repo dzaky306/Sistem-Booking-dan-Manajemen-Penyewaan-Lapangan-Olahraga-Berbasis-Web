@@ -52,58 +52,126 @@
 
             <h2 class="font-bold text-lg">Pilih jadwal bermain</h2>
             <p class="text-sm text-gray-500 mt-2">
-                Fitur ketersediaan jadwal akan dibuat pada tahap sistem booking.
+                Pilih tanggal, jam, dan durasi bermain.
             </p>
 
-            <div class="mt-5">
-                <label for="tanggal" class="block text-sm font-medium mb-2">Tanggal bermain</label>
-                <input id="tanggal" type="date" min="{{ date('Y-m-d') }}"
-                       class="w-full border border-gray-200 rounded-xl px-3 py-3">
-            </div>
+            @if (session('success'))
+                <div class="bg-green-50 border border-green-200 text-green-700 p-3 rounded-xl mt-4 text-sm">
+                    {{ session('success') }}
+                </div>
+            @endif
 
-            <div class="mt-4">
-                <label for="jam" class="block text-sm font-medium mb-2">Jam bermain</label>
-                <select id="jam" class="w-full border border-gray-200 rounded-xl px-3 py-3">
-                    <option value="">Pilih jam</option>
-                    @foreach (['08:00', '10:00', '13:00', '15:00', '18:00', '20:00'] as $time)
-                        <option value="{{ $time }}">{{ $time }}</option>
-                    @endforeach
-                </select>
-            </div>
+            @if ($errors->any())
+                <div class="bg-red-50 border border-red-200 text-red-700 p-3 rounded-xl mt-4 text-sm">
+                    <ul class="list-disc pl-5">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
-            <div class="mt-4">
-                <label for="durasi" class="block text-sm font-medium mb-2">Durasi</label>
-                <select id="durasi" class="w-full border border-gray-200 rounded-xl px-3 py-3">
-                    @foreach ([1, 2, 3] as $duration)
-                        <option value="{{ $duration }}">{{ $duration }} jam</option>
-                    @endforeach
-                </select>
-            </div>
+            @auth
+                <form action="{{ route('bookings.store', $field->id) }}"
+                      method="POST">
+                    @csrf
 
-            <div class="bg-green-50 rounded-xl p-4 mt-4">
-                <p class="text-sm text-gray-600">Estimasi total</p>
-                <p id="total-harga" class="text-xl font-bold text-[#176B4D] mt-1">
-                    Rp{{ number_format((float) $field->price_per_hour, 0, ',', '.') }}
-                </p>
-            </div>
+                    <div class="mt-5">
+                        <label for="booking_date" class="block text-sm font-medium mb-2">
+                            Tanggal bermain
+                        </label>
+                        <input
+                            id="booking_date"
+                            name="booking_date"
+                            type="date"
+                            min="{{ date('Y-m-d') }}"
+                            value="{{ old('booking_date') }}"
+                            required
+                            class="w-full border border-gray-200 rounded-xl px-3 py-3"
+                        >
+                    </div>
 
-            <button type="button"
-                    onclick="alert('Fitur booking akan diaktifkan setelah sistem jadwal dibuat.')"
-                    class="w-full mt-5 bg-[#176B4D] text-white py-3 rounded-xl font-semibold hover:bg-green-800">
-                Booking Sekarang
-            </button>
+                    <div class="mt-4">
+                        <label for="start_time" class="block text-sm font-medium mb-2">
+                            Jam bermain
+                        </label>
+                        <select
+                            id="start_time"
+                            name="start_time"
+                            required
+                            class="w-full border border-gray-200 rounded-xl px-3 py-3"
+                        >
+                            <option value="">Pilih jam</option>
+                            @foreach (['08:00', '10:00', '13:00', '15:00', '18:00', '20:00'] as $time)
+                                <option value="{{ $time }}" @selected(old('start_time') === $time)>
+                                    {{ $time }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="mt-4">
+                        <label for="duration" class="block text-sm font-medium mb-2">
+                            Durasi
+                        </label>
+                        <select
+                            id="duration"
+                            name="duration"
+                            required
+                            class="w-full border border-gray-200 rounded-xl px-3 py-3"
+                        >
+                            @foreach ([1, 2, 3] as $duration)
+                                <option value="{{ $duration }}" @selected(old('duration', 1) == $duration)>
+                                    {{ $duration }} jam
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div class="bg-green-50 rounded-xl p-4 mt-4">
+                        <p class="text-sm text-gray-600">Estimasi total</p>
+                        <p id="total-harga" class="text-xl font-bold text-[#176B4D] mt-1">
+                            Rp{{ number_format((float) $field->price_per_hour, 0, ',', '.') }}
+                        </p>
+                    </div>
+
+                    <button
+                        type="submit"
+                        class="w-full mt-5 bg-[#176B4D] text-white py-3 rounded-xl font-semibold hover:bg-green-800 transition"
+                    >
+                        Booking Sekarang
+                    </button>
+                </form>
+            @else
+                <div class="bg-gray-50 rounded-xl p-4 mt-5">
+                    <p class="text-sm text-gray-600">
+                        Silakan login terlebih dahulu untuk melakukan booking lapangan.
+                    </p>
+                    <a href="{{ route('login') }}"
+                       class="block text-center mt-4 bg-[#176B4D] text-white py-3 rounded-xl font-semibold hover:bg-green-800">
+                        Login untuk Booking
+                    </a>
+                </div>
+            @endauth
         </aside>
     </div>
 </section>
 
 <script>
     const hargaPerJam = {{ (float) $field->price_per_hour }};
-    const durasi = document.getElementById('durasi');
+    const durasi = document.getElementById('duration');
     const totalHarga = document.getElementById('total-harga');
 
-    durasi.addEventListener('change', function () {
-        totalHarga.textContent = 'Rp' +
-            new Intl.NumberFormat('id-ID').format(hargaPerJam * Number(this.value));
-    });
+    if (durasi && totalHarga) {
+        function updateTotalHarga() {
+            const total = hargaPerJam * Number(durasi.value);
+
+            totalHarga.textContent = 'Rp' +
+                new Intl.NumberFormat('id-ID').format(total);
+        }
+
+        durasi.addEventListener('change', updateTotalHarga);
+        updateTotalHarga();
+    }
 </script>
 @endsection

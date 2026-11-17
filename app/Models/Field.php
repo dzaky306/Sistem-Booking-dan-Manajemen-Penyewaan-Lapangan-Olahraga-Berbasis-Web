@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Field extends Model
 {
@@ -24,5 +25,11 @@ class Field extends Model
             'is_active' => 'boolean',
             'price_per_hour' => 'decimal:2',
         ];
+    }
+
+    // Relasi lapangan dengan banyak booking
+    public function bookings(): HasMany
+    {
+        return $this->hasMany(Booking::class);
     }
 }

@@ -2,6 +2,7 @@
 <?php
 
 use App\Models\Field;
+use App\Http\Controllers\BookingController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -42,6 +43,26 @@ Route::get('/lapangan/{field}', function (Field $field) {
 
     return view('fields.show', compact('field'));
 })->whereNumber('field')->name('fields.show');
+
+// BOOKING LAPANGAN
+Route::post('/lapangan/{field}/booking', [BookingController::class, 'store'])
+    ->middleware('auth')
+    ->whereNumber('field')
+    ->name('bookings.store');
+
+// RIWAYAT BOOKING
+Route::get('/booking', [BookingController::class, 'index'])
+    ->middleware('auth')
+    ->name('bookings.index');
+
+// PROFIL PENGGUNA
+Route::middleware('auth')->group(function () {
+    Route::get('/profil', function () {
+        return view('profile.edit', [
+            'user' => auth()->user(),
+        ]);
+    })->name('profile.edit');
+});
 
 // LOGIN
 Route::get('/login', function () {
